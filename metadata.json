@@ -1,0 +1,6 @@
+{
+  "name": "국토교통 ODA 사업DB 관리시스템",
+  "description": "국제개발협력센터(KIDC) 국토교통 ODA 사업 발굴부터 계약, 수행, 성과관리, 사후 추적조사까지 전 주기를 체계적으로 관리하는 사업DB 시스템 및 대국민 포털",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
