@@ -95,35 +95,39 @@ export const BudgetManagementView: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
           <span className="text-slate-500 font-semibold block mb-1">총 배정 예산</span>
-          <div className="text-lg font-black text-slate-900">
-            {(totalBudget / 100000000).toFixed(1)} <span className="text-xs font-normal">억원</span>
+          <div className="text-lg font-black text-slate-900 font-mono">
+            {totalBudget.toLocaleString()} <span className="text-xs font-normal font-sans">원</span>
           </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">{(totalBudget / 100000000).toFixed(1)} 억원</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-blue-200 bg-blue-50/20 shadow-xs">
           <span className="text-blue-900 font-semibold block mb-1">총 계약 체결액</span>
-          <div className="text-lg font-black text-blue-900">
-            {(totalContract / 100000000).toFixed(1)} <span className="text-xs font-normal">억원</span>
+          <div className="text-lg font-black text-blue-900 font-mono">
+            {totalContract.toLocaleString()} <span className="text-xs font-normal font-sans">원</span>
           </div>
+          <div className="text-[11px] text-blue-600 mt-0.5">{(totalContract / 100000000).toFixed(1)} 억원</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-indigo-200 bg-indigo-50/20 shadow-xs">
           <span className="text-indigo-900 font-semibold block mb-1">낙찰차액 합계 (F-132)</span>
-          <div className="text-lg font-black text-indigo-900">
-            {(totalSaving / 100000000).toFixed(1)} <span className="text-xs font-normal">억원</span>
+          <div className="text-lg font-black text-indigo-900 font-mono">
+            {totalSaving.toLocaleString()} <span className="text-xs font-normal font-sans">원</span>
           </div>
+          <div className="text-[11px] text-indigo-600 mt-0.5">{(totalSaving / 100000000).toFixed(1)} 억원</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-teal-200 bg-teal-50/20 shadow-xs">
           <span className="text-teal-900 font-semibold block mb-1">총 집행액 (기성지급)</span>
-          <div className="text-lg font-black text-teal-900">
-            {(totalExecuted / 100000000).toFixed(1)} <span className="text-xs font-normal">억원</span>
+          <div className="text-lg font-black text-teal-900 font-mono">
+            {totalExecuted.toLocaleString()} <span className="text-xs font-normal font-sans">원</span>
           </div>
+          <div className="text-[11px] text-teal-700 mt-0.5">{(totalExecuted / 100000000).toFixed(1)} 억원</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs col-span-2 lg:col-span-1">
           <span className="text-slate-500 font-semibold block mb-1">평균 집행률 (F-134)</span>
-          <div className="text-lg font-black text-slate-900 flex items-center gap-1">
+          <div className="text-lg font-black text-slate-900 flex items-center gap-1 font-mono">
             {avgExecutionRate}%
           </div>
         </div>
@@ -137,13 +141,13 @@ export const BudgetManagementView: React.FC = () => {
               <tr>
                 <th className="p-3.5 w-24">사업코드</th>
                 <th className="p-3.5">사업명 / 수행기관</th>
-                <th className="p-3.5 w-24 text-right">예산액(A)</th>
-                <th className="p-3.5 w-24 text-right">계약액(B)</th>
-                <th className="p-3.5 w-28 text-right bg-indigo-50/50 text-indigo-900 font-bold">
+                <th className="p-3.5 w-32 text-right">예산액(A)</th>
+                <th className="p-3.5 w-32 text-right">계약액(B)</th>
+                <th className="p-3.5 w-32 text-right bg-indigo-50/50 text-indigo-900 font-bold">
                   낙찰차액(A-B)
                 </th>
-                <th className="p-3.5 w-24 text-right">집행액(C)</th>
-                <th className="p-3.5 w-24 text-right">집행잔액(B-C)</th>
+                <th className="p-3.5 w-32 text-right">집행액(C)</th>
+                <th className="p-3.5 w-32 text-right">집행잔액(B-C)</th>
                 <th className="p-3.5 w-20 text-center">집행률</th>
                 <th className="p-3.5 w-20 text-center">상세조정</th>
               </tr>
@@ -178,19 +182,40 @@ export const BudgetManagementView: React.FC = () => {
                       )}
                     </td>
                     <td className="p-3.5 text-right font-mono font-medium text-slate-700">
-                      {(allocated / 100000000).toFixed(2)} 억
+                      <div>{allocated.toLocaleString()}원</div>
+                      <div className="text-[10px] text-slate-400 font-sans">{(allocated / 100000000).toFixed(2)} 억</div>
                     </td>
                     <td className="p-3.5 text-right font-mono font-medium text-blue-900">
-                      {contract > 0 ? `${(contract / 100000000).toFixed(2)} 억` : '-'}
+                      {contract > 0 ? (
+                        <>
+                          <div>{contract.toLocaleString()}원</div>
+                          <div className="text-[10px] text-blue-600 font-sans">{(contract / 100000000).toFixed(2)} 억</div>
+                        </>
+                      ) : '-'}
                     </td>
                     <td className="p-3.5 text-right font-mono font-bold text-indigo-900 bg-indigo-50/30">
-                      {contract > 0 ? `${(saving / 100000000).toFixed(2)} 억` : '-'}
+                      {contract > 0 ? (
+                        <>
+                          <div>{saving.toLocaleString()}원</div>
+                          <div className="text-[10px] text-indigo-600 font-sans">{(saving / 100000000).toFixed(2)} 억</div>
+                        </>
+                      ) : '-'}
                     </td>
                     <td className="p-3.5 text-right font-mono font-medium text-teal-800">
-                      {executed > 0 ? `${(executed / 100000000).toFixed(2)} 억` : '-'}
+                      {executed > 0 ? (
+                        <>
+                          <div>{executed.toLocaleString()}원</div>
+                          <div className="text-[10px] text-teal-600 font-sans">{(executed / 100000000).toFixed(2)} 억</div>
+                        </>
+                      ) : '-'}
                     </td>
                     <td className="p-3.5 text-right font-mono font-medium text-slate-600">
-                      {contract > 0 ? `${(balance / 100000000).toFixed(2)} 억` : '-'}
+                      {contract > 0 ? (
+                        <>
+                          <div>{balance.toLocaleString()}원</div>
+                          <div className="text-[10px] text-slate-400 font-sans">{(balance / 100000000).toFixed(2)} 억</div>
+                        </>
+                      ) : '-'}
                     </td>
                     <td className="p-3.5 text-center">
                       <span className="font-mono font-bold text-slate-800">{rate}%</span>

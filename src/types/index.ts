@@ -31,10 +31,26 @@ export type StageCode =
 
 export type RelationType = 'REPROPOSAL' | 'FOLLOWUP' | 'LINKED';
 
+// ==========================================
+// 시나리오 1: 미선정 사업 재제안 관련 모델
+// ==========================================
+export interface DeliberationRecord {
+  delibSeq: number;
+  projectId: string;
+  roundNo: number; // 1차 심의, 2차 재심의, 3차 심의 등
+  committeeNm: string; // 예: 국토교통 ODA 실무기획위원회, 제44차 국제개발협력위원회(국개위)
+  delibYmd: string; // 심의의결일
+  resultCd: 'SELECTED' | 'CONDITION_SELECTED' | 'HELD' | 'REJECTED';
+  resultNm: string; // 선정 / 조건부선정 / 보류 / 미선정(탈락)
+  mainReasons: string; // 심의 의견 및 탈락/보완 사유
+  countermeasurePlan?: string; // 보완 재제안 조치계획
+  docNo?: string; // 심의의결서 문서번호
+}
+
 export interface ProjectRelation {
   relationSeq: number;
-  baseProjectId: string; // 원사업 코드
-  targetProjectId: string; // 연결된 사업 코드
+  baseProjectId: string; // 원사업 코드 (보존된 미선정 사업)
+  targetProjectId: string; // 연결된 재제안 사업 코드
   relationType: RelationType;
   proposalRound?: number; // 1차, 2차 등
   changeSummary?: string; // 변경 요약
@@ -78,6 +94,35 @@ export interface ProjectSchedule {
 
 export type Schedule = ProjectSchedule;
 
+// ==========================================
+// 시나리오 3: 계약·집행·낙찰차액 관련 모델
+// ==========================================
+export interface SavingsUsePlan {
+  planSeq: number;
+  title: string;
+  plannedAmt: number; // 활용 예정액
+  category: string; // 현지 추가조사 / 과업 고도화 / 성과확산 워크숍 / 잔액 국고반납
+  rationale: string; // 활용 사유 및 기대효과
+  status: 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  statusNm: string;
+  submittedAt?: string;
+  approvedAt?: string;
+  approverNm?: string;
+  reviewComment?: string;
+}
+
+export interface PaymentDisbursement {
+  paymentSeq: number;
+  roundNo: number; // 1차 기성(선금), 2차 기성, 준공금
+  title: string;
+  paidYmd: string;
+  paidAmt: number;
+  category: 'ADVANCE' | 'INTERIM' | 'FINAL';
+  categoryNm: string;
+  invoiceDocNo?: string;
+  status: 'COMPLETED';
+}
+
 export interface BudgetDetailItem {
   detailSeq: number;
   itemNm: string;
@@ -89,11 +134,14 @@ export interface ProjectBudget {
   budgetSeq: number;
   projectId: string;
   fiscalYear: number;
-  budgetAmt: number;     // 예산액
+  budgetAmt: number;     // 배정액
   contractAmt: number;   // 계약액
   executedAmt: number;   // 집행액
   currency: 'KRW' | 'USD';
-  savingUsePlan?: string;// 낙찰차액 활용계획
+  savingAmt?: number;    // 낙찰차액 (배정액 - 계약액)
+  savingUsePlan?: string;// 낙찰차액 활용계획 요약
+  savingUsePlanObj?: SavingsUsePlan; // 상세 활용계획 객체
+  disbursements?: PaymentDisbursement[]; // 기성 집행 내역
   details?: BudgetDetailItem[];
 }
 
@@ -123,11 +171,25 @@ export interface ProjectDocument {
   createdBy: string;
 }
 
+// ==========================================
+// 시나리오 2: 등록·수정·결재·확정 관련 모델
+// ==========================================
 export type ApprovalStatus = 'DRAFT' | 'PENDING' | 'APPROVED' | 'RETURNED' | 'SUPPLEMENT';
+
+export interface ApprovalStepRecord {
+  stepNo: number;
+  stepNm: string; // 기안상신 -> 1차 팀장검토 -> 2차 센터장최종승인
+  actorId: string;
+  actorNm: string;
+  actorRoleNm: string;
+  status: 'PENDING' | 'APPROVED' | 'RETURNED' | 'SUPPLEMENT';
+  processedAt?: string;
+  comment?: string;
+}
 
 export interface ApprovalRequest {
   apprId: number;
-  targetType: 'PROJECT' | 'BUDGET' | 'PERFORMANCE';
+  targetType: 'PROJECT' | 'BUDGET' | 'PERFORMANCE' | 'DISCLOSURE';
   targetId: string;
   targetTitle: string;
   apprLineId: number;
@@ -136,6 +198,9 @@ export interface ApprovalRequest {
   beforePayloadJson?: Record<string, any>;
   statusCd: ApprovalStatus;
   statusNm: string;
+  currentStepNo?: number; // 1: 담당자상신, 2: 팀장검토, 3: 센터장최종승인
+  steps?: ApprovalStepRecord[]; // 다단계 결재선
+  resubmitRound?: number; // 1차 상신, 2차 재상신
   requestedBy: string;
   requestedByNm: string;
   requestedAt: string;
@@ -146,6 +211,18 @@ export interface ApprovalRequest {
   approvedAt?: string;
   approvedByNm?: string;
   approverComment?: string;
+  returnReason?: string; // 반려 사유
+}
+
+// 승인본 확정 이력
+export interface ConfirmedVersion {
+  versionSeq: number;
+  versionNo: string; // v1.0, v1.1, v2.0
+  confirmedAt: string;
+  confirmedByNm: string;
+  docNo: string; // 승인의결 번호
+  summary: string;
+  snapshotJson: Record<string, any>; // 확정 시점의 데이터 불변 스냅샷
 }
 
 export interface ToastItem {
@@ -156,7 +233,7 @@ export interface ToastItem {
 
 export interface ChangeHistory {
   histSeq: number;
-  targetType: 'PROJECT' | 'BUDGET' | 'SCHEDULE' | 'DOCUMENT' | 'PERFORMANCE';
+  targetType: 'PROJECT' | 'BUDGET' | 'SCHEDULE' | 'DOCUMENT' | 'PERFORMANCE' | 'DISCLOSURE';
   targetTable?: string;
   targetId: string;
   targetNm?: string;
@@ -172,22 +249,38 @@ export interface ChangeHistory {
   apprId?: number;
 }
 
-// 성과 관리: PDM 지표
+// ==========================================
+// 시나리오 4: PDM과 종료 후 성과 관련 모델
+// ==========================================
 export interface PdmIndicator {
   indicatorId: number;
   planSeq: number;
   indicatorLevel: 'GOAL' | 'PURPOSE' | 'OUTPUT' | 'ACTIVITY';
   indicatorNm: string;
-  baselineVal: number;
-  targetVal: number;
-  actualVal: number;
+  baselineVal: number; // 기준선 (사업 착수 시점)
+  targetVal: number;   // 목표 (사업 종료 시점)
+  actualVal: number;   // 실적 (측정 실적)
   unit: string;
   measureMethod: string;
   measureCycle: string;
   achievedYn: 'Y' | 'N';
+  evidenceDocNm?: string; // 실적 증빙 문서명
+  evidenceDocUrl?: string;
+  actualUpdatedYmd?: string;
 }
 
-// 성과 관리: 추적조사 및 사후관리 (차수별 누적)
+// 종료선 평가
+export interface EndlineEvaluation {
+  evalYmd: string;
+  grade: 'S' | 'A' | 'B' | 'C' | 'D';
+  gradeNm: string;
+  score: number; // 100점 만점
+  evaluatorNm: string; // 평가단 (예: 국토교통 ODA 사후평가위원회)
+  summaryReportDocNm: string;
+  strategicFeedback: string;
+  sustainForecast: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
 export interface TrackingSurvey {
   surveyId: number;
   projectId: string;
@@ -203,7 +296,7 @@ export interface TrackingSurvey {
   krCompanyOrderYn: 'Y' | 'N'; // 국내기업 연계 수주 여부
   krCompanyOrderAmt?: number; // 국내기업 수주 금액 (KRW)
   krCompanyOrderDesc?: string;
-  indicatorResults: {
+  indicatorResults?: {
     indicatorId: number;
     indicatorNm: string;
     targetVal: number;
@@ -212,6 +305,43 @@ export interface TrackingSurvey {
     achieved: 'Y' | 'N';
     remark?: string;
   }[];
+}
+
+// ==========================================
+// 시나리오 5: 홈페이지 공개 및 정정 이력 모델
+// ==========================================
+export interface DisclosureReview {
+  isReviewed: boolean;
+  reviewedAt?: string;
+  reviewerNm?: string;
+  privacyCheck: boolean;      // 1. 개인정보 비식별 조치 여부
+  costSecurityCheck: boolean; // 2. 세부 원가/단가 보안 여부
+  diplomaticCheck: boolean;   // 3. 수원국 외교 보안 점검 여부
+  licenseCheck: boolean;      // 4. 배포 라이선스/저작권 점검 여부
+  reviewOpinion?: string;
+}
+
+export interface DisclosureApproval {
+  isApproved: boolean;
+  approvedAt?: string;
+  approverNm?: string;
+  disclosureScope: 'FULL' | 'SUMMARY' | 'NONE'; // 전체공개 / 요약공개 / 비공개
+  approvalDocNo?: string;
+  approvalComment?: string;
+}
+
+export interface ErrataNotice {
+  errataSeq: number;
+  projectId: string;
+  projectNm: string;
+  noticeNo: string; // 예: 2026-ERR-001
+  errataYmd: string;
+  targetField: string;
+  fieldLabel: string;
+  beforeVal: string;
+  afterVal: string;
+  reason: string; // 정정 사유
+  authorNm: string;
 }
 
 // 메인 사업 모델
@@ -249,7 +379,24 @@ export interface Project {
   remark?: string;
   overview?: string; // 사업개요 / 추진배경
   expectedEffect?: string; // 기대효과
-  
+
+  // 1. 미선정 사업 재제안 관련
+  isPreserved?: boolean; // 미선정 원사업 영구 보존 플래그
+  preservedAt?: string;
+  preservationReason?: string;
+  deliberations?: DeliberationRecord[]; // 회차별 심의 결과 누적
+
+  // 2. 등록·수정·결재·확정 관련
+  confirmedVersions?: ConfirmedVersion[]; // 승인본 확정 이력
+
+  // 4. PDM 및 종료선 평가
+  endlineEval?: EndlineEvaluation; // 종료선 성과평가
+
+  // 5. 홈페이지 공개 및 정정 이력
+  disclosureReview?: DisclosureReview; // 공개 검토
+  disclosureApproval?: DisclosureApproval; // 공개 승인
+  errataList?: ErrataNotice[]; // 정정 공시 이력
+
   // Relations: 원사업 / 재제안 / 후속연계
   relations?: ProjectRelation[];
   
@@ -261,3 +408,4 @@ export interface Project {
   indicators?: PdmIndicator[];
   trackingSurveys?: TrackingSurvey[];
 }
+

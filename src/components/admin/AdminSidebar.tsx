@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
+  Sparkles,
   LayoutDashboard,
   Database,
   GitPullRequest,
@@ -25,6 +26,13 @@ export const AdminSidebar: React.FC = () => {
   }, 0);
 
   const menuItems = [
+    {
+      key: 'rfp-scenarios',
+      label: '주요 업무',
+      icon: Sparkles,
+      badge: '5대필수',
+      badgeColor: 'bg-gradient-to-r from-amber-400 to-rose-400 text-slate-950 font-black tracking-tighter',
+    },
     { key: 'dashboard', label: '종합 대시보드', icon: LayoutDashboard },
     { key: 'projects', label: '사업정보 관리 (F-101)', icon: Database, badge: projects.length },
     { key: 'stages', label: '단계별 추진현황 (F-110)', icon: GitPullRequest },

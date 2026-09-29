@@ -20,6 +20,7 @@ import { PerformanceManagementView } from './components/admin/PerformanceManagem
 import { PivotStatsView } from './components/admin/PivotStatsView';
 import { AuditHistoryView } from './components/admin/AuditHistoryView';
 import { SystemAdminView } from './components/admin/SystemAdminView';
+import { RfpScenariosView } from './components/admin/RfpScenariosView';
 
 import { ProjectDetailModal } from './components/modals/ProjectDetailModal';
 import { ReproposalCompareModal } from './components/modals/ReproposalCompareModal';
@@ -103,6 +104,7 @@ const AppContent: React.FC = () => {
             <AdminSidebar />
 
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full">
+              {adminTab === 'rfp-scenarios' && <RfpScenariosView />}
               {adminTab === 'dashboard' && <DashboardView />}
               {adminTab === 'projects' && <ProjectListView />}
               {adminTab === 'stages' && <StagePipelineView />}

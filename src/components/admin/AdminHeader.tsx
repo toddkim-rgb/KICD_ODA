@@ -58,6 +58,15 @@ export const AdminHeader: React.FC = () => {
 
         {/* Right Action Bar */}
         <div className="flex items-center space-x-3">
+          {/* Quick jump to RFP Scenarios */}
+          <button
+            onClick={() => setAdminTab('rfp-scenarios')}
+            className="px-3 py-1 bg-gradient-to-r from-amber-400 to-rose-400 hover:from-amber-500 hover:to-rose-500 text-slate-950 font-black rounded-lg text-xs flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer tracking-tight"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-slate-950" />
+            <span>주요 업무</span>
+          </button>
+
           {/* Notifications: Pending Approvals & Delays */}
           <div className="flex items-center space-x-2">
             {pendingApprovalsCount > 0 && (

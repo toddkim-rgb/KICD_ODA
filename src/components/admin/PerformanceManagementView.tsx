@@ -132,11 +132,11 @@ export const PerformanceManagementView: React.FC = () => {
 
         <div className="bg-white p-5 rounded-2xl border border-purple-200 bg-purple-50/20 shadow-xs">
           <span className="text-purple-900 font-semibold block mb-1">국내 기업 해외 후속 수주 누적</span>
-          <div className="text-2xl font-black text-purple-950">
-            {(totalFollowupWins / 100000000).toFixed(0)} <span className="text-xs font-normal">억원</span>
+          <div className="text-2xl font-black text-purple-950 font-mono">
+            {totalFollowupWins.toLocaleString()} <span className="text-xs font-normal font-sans">원</span>
           </div>
           <div className="text-[11px] text-purple-700 mt-2 font-medium">
-            국토교통 ODA 연계 후속 인프라 사업
+            국토교통 ODA 연계 후속 인프라 사업 ({(totalFollowupWins / 100000000).toFixed(0)}억원)
           </div>
         </div>
 
@@ -249,7 +249,7 @@ export const PerformanceManagementView: React.FC = () => {
                     </span>
                     <div className="text-sm font-black text-purple-950 font-mono">
                       {srv.krCompanyOrderAmt
-                        ? `${(srv.krCompanyOrderAmt / 100000000).toFixed(1)} 억원`
+                        ? `${srv.krCompanyOrderAmt.toLocaleString()}원 (${(srv.krCompanyOrderAmt / 100000000).toFixed(1)}억원)`
                         : '수주 실적 없음'}
                     </div>
                     {srv.krCompanyOrderDesc && (
@@ -369,8 +369,8 @@ export const PerformanceManagementView: React.FC = () => {
                     onChange={(e) => setKrOrderAmt(Number(e.target.value))}
                     className="w-full p-2 border border-purple-300 rounded-lg bg-white font-mono font-bold"
                   />
-                  <span className="text-[11px] text-purple-700 mt-0.5 block">
-                    {(krOrderAmt / 100000000).toFixed(1)} 억원
+                  <span className="text-[11px] text-purple-700 mt-0.5 block font-mono">
+                    {krOrderAmt.toLocaleString()}원 ({(krOrderAmt / 100000000).toFixed(1)} 억원)
                   </span>
                 </div>
                 <div>

@@ -115,10 +115,10 @@ export const StagePipelineView: React.FC = () => {
                         {p.projectNm}
                       </h4>
 
-                      <div className="text-[11px] text-slate-500 flex justify-between">
+                      <div className="text-[11px] text-slate-500 flex justify-between items-baseline">
                         <span>{p.sectorNm}</span>
-                        <span className="font-mono font-bold text-slate-800">
-                          {(p.budgetAmt / 100000000).toFixed(1)} 억원
+                        <span className="font-mono font-bold text-slate-800" title={`${(p.budgetAmt / 100000000).toFixed(1)}억원`}>
+                          {p.budgetAmt.toLocaleString()}원
                         </span>
                       </div>
 

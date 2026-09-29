@@ -240,12 +240,12 @@ export const PivotStatsView: React.FC = () => {
                     const val = matrix[r][c];
                     return (
                       <td key={c} className="p-3 text-right font-mono text-slate-700 border-r border-slate-100">
-                        {val > 0 ? (metric === 'count' ? val : val.toFixed(1)) : '-'}
+                        {val > 0 ? (metric === 'count' ? val.toLocaleString() : Number(val.toFixed(1)).toLocaleString()) : '-'}
                       </td>
                     );
                   })}
                   <td className="p-3 text-right font-mono font-bold text-blue-950 bg-blue-50/30">
-                    {metric === 'count' ? rowTotals[r] : rowTotals[r].toFixed(1)}
+                    {metric === 'count' ? rowTotals[r].toLocaleString() : Number(rowTotals[r].toFixed(1)).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -255,11 +255,11 @@ export const PivotStatsView: React.FC = () => {
                 <td className="p-3 bg-slate-200 border-r border-slate-200">열 합계</td>
                 {colKeys.map((c) => (
                   <td key={c} className="p-3 text-right font-mono border-r border-slate-200">
-                    {metric === 'count' ? colTotals[c] : colTotals[c].toFixed(1)}
+                    {metric === 'count' ? colTotals[c].toLocaleString() : Number(colTotals[c].toFixed(1)).toLocaleString()}
                   </td>
                 ))}
                 <td className="p-3 text-right font-mono font-black text-blue-900 bg-blue-100/60">
-                  {metric === 'count' ? grandTotal : grandTotal.toFixed(1)}
+                  {metric === 'count' ? grandTotal.toLocaleString() : Number(grandTotal.toFixed(1)).toLocaleString()}
                 </td>
               </tr>
             </tbody>

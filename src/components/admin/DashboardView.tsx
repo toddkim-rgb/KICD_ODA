@@ -73,12 +73,12 @@ export const DashboardView: React.FC = () => {
             <span>총 사업비 규모</span>
             <DollarSign className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-emerald-950 tracking-tight">
-            {(totalBudget / 100000000).toFixed(0)}
-            <span className="text-xs font-bold text-slate-500 ml-1">억원</span>
+          <div className="text-2xl font-black text-emerald-950 tracking-tight font-mono">
+            {totalBudget.toLocaleString()}
+            <span className="text-xs font-bold text-slate-500 ml-1 font-sans">원</span>
           </div>
           <div className="text-[11px] text-emerald-700 mt-2 font-medium">
-            전 주기 계약 및 집행 관리 중
+            전 주기 계약 및 집행 관리 중 ({(totalBudget / 100000000).toFixed(0)}억원)
           </div>
         </div>
 

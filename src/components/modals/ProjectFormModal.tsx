@@ -236,8 +236,8 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
                 onChange={(e) => setBudgetAmt(Number(e.target.value))}
                 className="w-full p-2 border border-slate-300 rounded-lg font-mono font-bold text-slate-900"
               />
-              <span className="text-[11px] text-slate-500 mt-0.5 block">
-                {(budgetAmt / 100000000).toFixed(1)} 억원
+              <span className="text-[11px] text-slate-500 mt-0.5 block font-mono">
+                {budgetAmt.toLocaleString()}원 ({(budgetAmt / 100000000).toFixed(1)} 억원)
               </span>
             </div>
 

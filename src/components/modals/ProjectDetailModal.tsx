@@ -12,6 +12,7 @@ import {
   GitBranch,
   Download,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   ExternalLink,
   Edit3,
@@ -269,8 +270,11 @@ export const ProjectDetailModal: React.FC = () => {
                         type="number"
                         value={editForm.budgetAmt}
                         onChange={(e) => setEditForm({ ...editForm, budgetAmt: Number(e.target.value) })}
-                        className="w-full p-2 border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 font-medium"
+                        className="w-full p-2 border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 font-medium font-mono"
                       />
+                      <span className="text-[11px] text-slate-500 mt-1 block font-mono">
+                        {(editForm.budgetAmt || 0).toLocaleString()}원 ({((editForm.budgetAmt || 0) / 100000000).toFixed(1)} 억원)
+                      </span>
                     </div>
                     <div>
                       <label className="block text-slate-700 font-semibold mb-1">추진단계</label>
@@ -870,6 +874,68 @@ export const ProjectDetailModal: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* 미선정 원사업 보존 상태 안내 카드 */}
+              {project.isPreserved && (
+                <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl text-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-rose-900 flex items-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4 text-rose-600" />
+                      <span>미선정 원사업 영구 보존본 (Archived)</span>
+                    </span>
+                    <span className="text-[11px] text-rose-700 font-mono">
+                      보존일시: {project.preservedAt || '2023-11-20'}
+                    </span>
+                  </div>
+                  <p className="text-slate-700 text-[11px] leading-relaxed">
+                    본 과제는 국개위 심의 미선정(탈락) 이력 보존 원칙에 따라 수정이 제한되는 영구 보존본입니다. 변경 사항은 보완 재제안 과제를 생성하여 관리합니다.
+                  </p>
+                </div>
+              )}
+
+              {/* 회차별 심의 및 재심의 결과 누적 */}
+              {project.deliberations && project.deliberations.length > 0 && (
+                <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    회차별 재심의 결과 누적 이력
+                  </h3>
+                  <div className="space-y-2">
+                    {project.deliberations.map((d) => (
+                      <div
+                        key={d.delibSeq}
+                        className={`p-3 rounded-xl border ${
+                          d.resultCd === 'SELECTED'
+                            ? 'bg-emerald-50/50 border-emerald-200'
+                            : 'bg-rose-50/50 border-rose-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              d.resultCd === 'SELECTED'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}
+                          >
+                            제 {d.roundNo}차 심의: {d.resultNm}
+                          </span>
+                          <span className="font-mono text-slate-500 text-[10px]">
+                            {d.delibYmd} | {d.committeeNm}
+                          </span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] mt-1 leading-relaxed whitespace-pre-line">
+                          <strong>심사의견:</strong> {d.mainReasons}
+                        </p>
+                        {d.countermeasurePlan && (
+                          <div className="mt-1.5 p-2 bg-white rounded border border-slate-200 text-[10px] text-slate-600">
+                            <strong>보완조치계획:</strong> {d.countermeasurePlan}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -971,8 +1037,11 @@ export const ProjectDetailModal: React.FC = () => {
                       placeholder="예: 2500000000"
                       value={newSurveyKrAmount}
                       onChange={(e) => setNewSurveyKrAmount(Number(e.target.value))}
-                      className="w-full p-2 border border-indigo-200 rounded bg-white"
+                      className="w-full p-2 border border-indigo-200 rounded bg-white font-mono"
                     />
+                    <span className="text-[11px] text-indigo-700 mt-1 block font-mono">
+                      {(newSurveyKrAmount || 0).toLocaleString()}원 ({((newSurveyKrAmount || 0) / 100000000).toFixed(1)} 억원)
+                    </span>
                   </div>
                   <div>
                     <label className="block text-indigo-900 font-semibold mb-1">수주 상세 내용</label>

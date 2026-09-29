@@ -12,6 +12,12 @@ export const PortalProjectDB: React.FC = () => {
   const [selectedType, setSelectedType] = useState('ALL');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [sortBy, setSortBy] = useState<'newest' | 'budgetDesc'>('newest');
+  const [isErrataModalOpen, setIsErrataModalOpen] = useState(false);
+
+  // All published errata notices
+  const allErrata = useMemo(() => {
+    return projects.flatMap((p) => p.errataList || []);
+  }, [projects]);
 
   // Filter public projects only
   const filteredProjects = useMemo(() => {
@@ -70,6 +76,13 @@ export const PortalProjectDB: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={() => setIsErrataModalOpen(true)}
+              className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+            >
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <span>정보 정정 공시 ({allErrata.length}건)</span>
+            </button>
             <button
               onClick={handleExport}
               className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
@@ -216,8 +229,21 @@ export const PortalProjectDB: React.FC = () => {
                   >
                     <td className="p-3.5 font-mono font-bold text-slate-600">{p.projectId}</td>
                     <td className="p-3.5">
-                      <div className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
-                        {p.projectNm}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
+                          {p.projectNm}
+                        </span>
+                        {p.errataList && p.errataList.length > 0 && (
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsErrataModalOpen(true);
+                            }}
+                            className="text-[10px] bg-rose-100 text-rose-800 border border-rose-200 px-1.5 py-0.2 rounded font-bold hover:bg-rose-200"
+                          >
+                            정정공시 {p.errataList.length}건
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-slate-500 mt-0.5 flex items-center space-x-2">
                         <span>수행기관: {p.executingAgencyNm}</span>
@@ -235,8 +261,9 @@ export const PortalProjectDB: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-3.5 text-slate-600">{p.projectTypeNm}</td>
-                    <td className="p-3.5 text-right font-mono font-bold text-slate-900">
-                      {(p.budgetAmt / 100000000).toFixed(1)} 억원
+                    <td className="p-3.5 text-right font-mono font-bold text-slate-900" title={`${(p.budgetAmt / 100000000).toFixed(1)}억원`}>
+                      <div>{p.budgetAmt.toLocaleString()}원</div>
+                      <div className="text-[10px] text-slate-400 font-normal font-sans">{(p.budgetAmt / 100000000).toFixed(1)} 억원</div>
                     </td>
                     <td className="p-3.5 text-center">
                       <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-semibold rounded-md">
@@ -298,9 +325,12 @@ export const PortalProjectDB: React.FC = () => {
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-slate-400 block">총 사업비</span>
-                  <span className="font-bold text-sm text-blue-900">
-                    {(p.budgetAmt / 100000000).toFixed(1)} 억원
-                  </span>
+                  <div className="font-bold text-sm text-blue-900 font-mono">
+                    {p.budgetAmt.toLocaleString()}원
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-sans">
+                    ({(p.budgetAmt / 100000000).toFixed(1)} 억원)
+                  </div>
                 </div>
                 <span className="text-xs font-semibold text-blue-600 flex items-center space-x-1">
                   <span>상세보기</span>
@@ -309,6 +339,78 @@ export const PortalProjectDB: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {/* Errata Notices Modal */}
+      {isErrataModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 text-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+                <h3 className="font-bold text-base text-slate-900">
+                  국토교통 ODA 대국민 공개정보 정정 공시 내역 (Errata Notices)
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsErrataModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-slate-500 text-[11px] leading-relaxed">
+              본 정정 공시는 투명한 정보 제공 및 신뢰도 확보를 위해 사업 정보의 정정·수정 사항(사유, 전·후 내용, 정정일자)을 대국민에게 공시하는 공식 창구입니다.
+            </p>
+
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+              {allErrata.map((err) => (
+                <div key={err.errataSeq} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-rose-800 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]">
+                      정정공시 번호 {err.noticeNo}
+                    </span>
+                    <span className="text-slate-500 font-mono text-[11px]">공시일: {err.errataYmd}</span>
+                  </div>
+
+                  <div className="font-bold text-slate-900 text-sm">
+                    {err.projectNm}
+                  </div>
+
+                  <div className="p-2.5 bg-white rounded-lg border border-slate-200 grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">정정 전 [{err.fieldLabel}]:</span>
+                      <span className="text-rose-700 line-through font-medium">{err.beforeVal}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">정정 후 [{err.fieldLabel}]:</span>
+                      <span className="text-emerald-700 font-bold">{err.afterVal}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-slate-700 pt-1">
+                    <strong>정정 사유:</strong> {err.reason} (공시책임: {err.authorNm})
+                  </div>
+                </div>
+              ))}
+
+              {allErrata.length === 0 && (
+                <div className="p-8 text-center text-slate-400 italic">
+                  현재 등록된 공개 정보 정정 공시 내역이 없습니다.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-200 flex justify-end">
+              <button
+                onClick={() => setIsErrataModalOpen(false)}
+                className="px-4 py-2 bg-slate-900 text-white rounded-xl font-bold"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

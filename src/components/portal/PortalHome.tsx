@@ -97,12 +97,12 @@ export const PortalHome: React.FC = () => {
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all">
           <div className="text-xs text-slate-500 font-semibold mb-1">총 지원 예산 규모</div>
-          <div className="text-2xl md:text-3xl font-black text-blue-900 tracking-tight">
-            {(totalBudget / 100000000).toFixed(0)}
-            <span className="text-sm font-bold text-slate-500 ml-1">억원</span>
+          <div className="text-2xl md:text-3xl font-black text-blue-900 tracking-tight font-mono">
+            {totalBudget.toLocaleString()}
+            <span className="text-sm font-bold text-slate-500 ml-1 font-sans">원</span>
           </div>
           <div className="text-[11px] text-slate-500 mt-2 font-medium">
-            국토교통 ODA 단일 전용 예산
+            국토교통 ODA 단일 전용 예산 ({(totalBudget / 100000000).toFixed(0)}억원)
           </div>
         </div>
 
@@ -119,12 +119,12 @@ export const PortalHome: React.FC = () => {
 
         <div className="bg-white p-5 rounded-2xl border border-purple-200 bg-purple-50/30 shadow-xs hover:border-purple-300 transition-all">
           <div className="text-xs text-purple-900 font-semibold mb-1">국내 기업 후속 수주 성과</div>
-          <div className="text-2xl md:text-3xl font-black text-purple-900 tracking-tight">
-            {(totalFollowupOrderAmt / 100000000).toFixed(0)}
-            <span className="text-sm font-bold text-purple-700 ml-1">억원</span>
+          <div className="text-2xl md:text-3xl font-black text-purple-900 tracking-tight font-mono">
+            {totalFollowupOrderAmt.toLocaleString()}
+            <span className="text-sm font-bold text-purple-700 ml-1 font-sans">원</span>
           </div>
           <div className="text-[11px] text-purple-700 mt-2 font-medium flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> 종료사업 추적조사 집계
+            <TrendingUp className="w-3 h-3" /> 누적 해외 수주 달성액 ({(totalFollowupOrderAmt / 100000000).toFixed(0)}억원)
           </div>
         </div>
       </div>
@@ -221,8 +221,11 @@ export const PortalHome: React.FC = () => {
 
                 <div className="sm:text-right shrink-0">
                   <div className="text-xs text-slate-400">사업비</div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {(p.budgetAmt / 100000000).toFixed(1)} 억원
+                  <div className="text-sm font-bold text-slate-900 font-mono">
+                    {p.budgetAmt.toLocaleString()}원
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-sans">
+                    ({(p.budgetAmt / 100000000).toFixed(1)} 억원)
                   </div>
                   <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
                     {p.stageNm}

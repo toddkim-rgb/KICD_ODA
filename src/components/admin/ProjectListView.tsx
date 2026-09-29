@@ -203,7 +203,7 @@ export const ProjectListView: React.FC = () => {
                 <th className="p-3.5 w-24">수원국</th>
                 <th className="p-3.5 w-24">분야</th>
                 <th className="p-3.5 w-28">추진단계</th>
-                <th className="p-3.5 w-28 text-right">사업비 (억원)</th>
+                <th className="p-3.5 w-32 text-right">사업비 (원)</th>
                 <th className="p-3.5 w-20 text-center">공개</th>
                 <th className="p-3.5 w-32 text-center">연계/대조표</th>
                 <th className="p-3.5 w-24 text-center">관리</th>
@@ -241,8 +241,9 @@ export const ProjectListView: React.FC = () => {
                         {p.stageNm}
                       </span>
                     </td>
-                    <td className="p-3.5 text-right font-mono font-bold text-slate-900">
-                      {(p.budgetAmt / 100000000).toFixed(1)}
+                    <td className="p-3.5 text-right font-mono font-bold text-slate-900" title={`${(p.budgetAmt / 100000000).toFixed(1)}억원`}>
+                      <div>{p.budgetAmt.toLocaleString()}원</div>
+                      <div className="text-[10px] text-slate-400 font-normal font-sans">{(p.budgetAmt / 100000000).toFixed(1)} 억원</div>
                     </td>
                     <td className="p-3.5 text-center">
                       {p.isPublic === 'Y' ? (

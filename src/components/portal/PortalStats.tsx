@@ -228,8 +228,8 @@ export const PortalStats: React.FC = () => {
                 <tr key={s.name} className="hover:bg-slate-50/70 transition-colors">
                   <td className="p-3 font-bold text-slate-800">{s.name}</td>
                   <td className="p-3 text-right font-mono">{s.count}건</td>
-                  <td className="p-3 text-right font-mono font-bold text-blue-900">{s.budgetEok} 억원</td>
-                  <td className="p-3 text-right font-mono text-slate-600">{avg} 억원</td>
+                  <td className="p-3 text-right font-mono font-bold text-blue-900">{s.budgetEok.toLocaleString()} 억원</td>
+                  <td className="p-3 text-right font-mono text-slate-600">{Number(avg).toLocaleString()} 억원</td>
                   <td className="p-3 text-right font-mono text-emerald-700 font-semibold">{pct}%</td>
                 </tr>
               );

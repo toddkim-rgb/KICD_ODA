@@ -147,10 +147,10 @@ export const AuditHistoryView: React.FC = () => {
                   </td>
                   <td className="p-3.5 font-semibold text-slate-900">{h.fieldLabel}</td>
                   <td className="p-3.5 text-slate-500 font-mono max-w-xs truncate">
-                    {h.beforeVal || '-'}
+                    {h.beforeVal ? (/^\d+$/.test(h.beforeVal) ? Number(h.beforeVal).toLocaleString() : h.beforeVal) : '-'}
                   </td>
                   <td className="p-3.5 text-blue-950 font-bold font-mono max-w-xs truncate bg-blue-50/30">
-                    {h.afterVal || '-'}
+                    {h.afterVal ? (/^\d+$/.test(h.afterVal) ? Number(h.afterVal).toLocaleString() : h.afterVal) : '-'}
                   </td>
                   <td className="p-3.5 text-slate-600">
                     <div className="font-semibold">{h.changedByName}</div>
